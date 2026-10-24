@@ -1,0 +1,13 @@
+mysql-connector-python
+bcrypt
+python-dotenv
+pandas
+matplotlib
+openpyxl
+pytest
+fastapi
+uvicorn
+pyjwt
+python-multipart
+httpx
+streamlit

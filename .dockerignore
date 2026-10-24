@@ -1,0 +1,22 @@
+# Things that must NEVER end up inside the image
+.env
+.env.*
+.git
+.github
+
+# Things the running app does not need
+.venv
+venv
+__pycache__
+*.pyc
+.pytest_cache
+tests
+docs
+logs
+reports
+*.md
+.vscode
+tempCodeRunnerFile.py
+Dockerfile
+docker-compose.yml
+.dockerignore

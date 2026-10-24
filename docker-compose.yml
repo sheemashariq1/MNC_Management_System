@@ -1,0 +1,81 @@
+# Starts the whole project with ONE command:   docker compose up --build
+#
+#   db         MySQL 8.4            (data is kept in the `db_data` volume)
+#   api        FastAPI              http://localhost:8000/docs
+#   dashboard  Streamlit            http://localhost:8501
+#   cli        the old console app  docker compose run --rm cli
+#
+# Secrets come from your .env file (copy .env.example to .env and fill it in).
+name: mnc
+
+x-app: &app
+  build: .
+  image: mnc-app
+  env_file: .env
+  restart: unless-stopped
+
+services:
+  db:
+    image: mysql:8.4
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_PASSWORD:?Put MYSQL_PASSWORD in your .env file}
+    volumes:
+      - db_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h 127.0.0.1 -p\"$$MYSQL_ROOT_PASSWORD\" --silent"]
+      interval: 5s
+      timeout: 5s
+      retries: 30
+      start_period: 20s
+
+  api:
+    <<: *app
+    command: ["python", "-m", "uvicorn", "api.main:app", "--host", "0.0.0.0", "--port", "8000"]
+    environment:
+      MYSQL_HOST: db                       # inside Docker the database is called "db"
+      JWT_SECRET: ${JWT_SECRET:?Put JWT_SECRET in your .env file}
+    ports:
+      - "8000:8000"
+    volumes:
+      - reports:/app/reports
+      - logs:/app/logs
+    depends_on:
+      db:
+        condition: service_healthy         # wait until MySQL really accepts logins
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/health')"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 15s
+
+  dashboard:
+    <<: *app
+    command: ["python", "-m", "streamlit", "run", "dashboard/app.py",
+              "--server.address", "0.0.0.0", "--server.port", "8501", "--server.headless", "true"]
+    environment:
+      MNC_API_URL: http://api:8000         # the dashboard talks to the API, never to the database
+    ports:
+      - "8501:8501"
+    depends_on:
+      api:
+        condition: service_healthy
+
+  cli:
+    <<: *app
+    profiles: ["cli"]                      # only starts when you ask for it (see top of file)
+    command: ["python", "MNC.py"]
+    environment:
+      MYSQL_HOST: db
+    stdin_open: true
+    tty: true
+    restart: "no"
+    depends_on:
+      db:
+        condition: service_healthy
+
+volumes:
+  db_data:
+  reports:
+  logs:
