@@ -4,23 +4,23 @@ employees.dept_id is a FOREIGN KEY -> departments.dept_id. So:
   * an employee can only belong to a department that really exists
   * a department that still has employees cannot be deleted by mistake
 """
-import schema  # noqa: F401  (makes sure the tables exist)
+import schema  
 import session
 from helpers import (ask_text, ask_optional, ask_int, ask_date, ask_yes,
                      print_rows)
 from services import ServiceError, department_service, employee_service
-# re-export: reports.py aur MNC.py bina badle chalte rahenge
-from services.department_service import overview_rows  # noqa: F401
-from services.employee_service import COLUMN_RULES, EMP_HEADERS, EMP_SQL  # noqa: F401
 
-# Menus kya edit kar sakte hain: service ke rules se bana (single source of truth)
+from services.department_service import overview_rows  
+from services.employee_service import COLUMN_RULES, EMP_HEADERS, EMP_SQL  
+
+
 EDITABLE = [
     (col, label, "optional" if kind == "text" and not required else kind, max_len)
     for col, (label, kind, max_len, required, _) in COLUMN_RULES.items()
 ]
 
 
-# ------------------------------------------------------------- small helpers
+# ------------------------------------------------------------- small helpers ---------------------------------------------------------
 def _ask_value(label, kind, max_len=None):
     prompt = f"enter {label}: "
     if kind == "int":
@@ -78,7 +78,7 @@ def _find_one(dept):
         print("That is not one of the listed employees.")
 
 
-# --------------------------------------------------------- employee actions
+# --------------------------------------------------------- employee actions --------------------------------------------------------
 def list_employees(dept):
     print_rows(EMP_HEADERS, employee_service.list_employees(dept[0] if dept else None))
 
@@ -216,7 +216,7 @@ def all_employees():
         employee_menu(None, "ALL EMPLOYEES (every department)")
 
 
-# ------------------------------------------------------------- departments
+# ------------------------------------------------------------- departments --------------------------------------------------------------
 
 def _add_department():
     name = ask_text("enter department name: ", 40)

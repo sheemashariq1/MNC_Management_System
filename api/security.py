@@ -1,11 +1,4 @@
-"""JWT login tokens.
-
-A token is a signed text the server gives after a successful login. The client
-sends it back in every request:  Authorization: Bearer <token>
-Nobody can change it (e.g. make themselves admin) without the secret key.
-The token only says WHO you are; your role is read from the database on every
-request, so a role change or a deleted account works immediately.
-"""
+"""JWT login tokens."""
 from datetime import datetime, timedelta, timezone
 
 import jwt  # PyJWT

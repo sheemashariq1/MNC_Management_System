@@ -46,7 +46,7 @@ def hire(client, headers, name="Asha", **extra):
     return client.post("/employees", json=body, headers=headers)
 
 
-# ================================================================ health + auth
+# ================================================================ health + auth =================================================================
 def test_health(client):
     assert client.get("/health").json() == {"status": "ok"}
 
@@ -98,7 +98,7 @@ def test_change_password_over_api(client, hr):
     assert client.post("/auth/change-password", json=bad, headers=hr).status_code == 400
 
 
-# ===================================================================== tokens
+# ===================================================================== tokens ============================================================================
 def test_no_token_or_garbage_token_is_401(client):
     assert client.get("/auth/me").status_code == 401
     assert client.get("/employees").status_code == 401
@@ -141,7 +141,7 @@ def test_token_helper_needs_a_long_secret(monkeypatch):
         security.create_access_token("boss")
 
 
-# ================================================================== employees
+# ================================================================== employees ===============================================================================
 def test_employee_crud_as_admin(client, admin, depts):
     r = hire(client, admin, department_id=depts["IT"], field="Backend", date_of_joining="2024-08-15")
     assert r.status_code == 201
@@ -193,7 +193,7 @@ def test_transfer(client, admin, depts):
     assert missing.status_code == 404
 
 
-# ============================================================ roles and scope
+# ============================================================ roles and scope ============================================================================
 def test_hr_sees_and_changes_only_the_hr_department(client, admin, hr, depts):
     own = hire(client, admin, name="Asha", department_id=depts["HR"]).json()["id"]
     other = hire(client, admin, name="Meera", department_id=depts["IT"]).json()["id"]
@@ -229,7 +229,7 @@ def test_every_role_can_see_the_building_overview(client, admin, hr, it):
         assert len(rows) == 5 and {"floor", "department", "employees"} <= rows[0].keys()
 
 
-# ========================================================= audit uses the TOKEN's user
+# ========================================================= audit uses the TOKEN's user ==========================================================================
 def test_audit_records_who_called_the_api(client, admin, hr, it, depts):
     hire(client, hr, name="ByHr")
     hire(client, it, name="ByIt")
@@ -247,7 +247,7 @@ def test_audit_filters_and_limit(client, admin, hr):
     assert len(client.get("/audit?limit=1", headers=admin).json()) == 1
 
 
-# =================================================================== departments
+# =================================================================== departments ================================================================================
 def test_department_management(client, admin, hr, depts):
     assert client.post("/departments", json={"name": "Finance", "code": "fin", "floor": 6},
                        headers=hr).status_code == 403
@@ -271,7 +271,7 @@ def test_department_patch_is_all_or_nothing_and_delete_is_protected(client, admi
     assert client.patch(f"/departments/{depts['OPS']}", json={}, headers=admin).status_code == 400
 
 
-# ======================================================================== users
+# ======================================================================== users ==================================================================================
 def test_user_management(client, admin, hr):
     assert {u["username"]: u["role"] for u in client.get("/users", headers=admin).json()} == \
         {"boss": "admin", "hruser": "hr"}
@@ -281,7 +281,7 @@ def test_user_management(client, admin, hr):
     assert client.delete("/users/boss", headers=admin).status_code == 409                           # yourself
 
 
-# ===================================================================== reports
+# ===================================================================== reports ===================================================================================
 def test_reports(client, admin, depts, tmp_path, monkeypatch):
     monkeypatch.setattr(reports, "REPORT_DIR", tmp_path)
     assert client.get("/reports/summary", headers=admin).json() == []

@@ -1,4 +1,4 @@
-# Things that must NEVER end up inside the image
+# Things that must never end up inside the image
 .env
 .env.*
 .git

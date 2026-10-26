@@ -6,7 +6,7 @@ import session
 from services import ServiceError, auth_service as auth
 
 
-# ---------------------------------------------------------------- hashing
+# ---------------------------------------------------------------- hashing ------------------------------------------------------------------
 def test_hash_is_bcrypt_and_salted():
     h1, h2 = auth.hash_password("secret1"), auth.hash_password("secret1")
     assert h1.startswith("$2b$") and len(h1) == 60
@@ -23,7 +23,7 @@ def test_verify_rejects_password_over_72_bytes():
     assert not auth.verify_password("a" * 80, auth.hash_password("secret1"), None)
 
 
-# ---------------------------------------------------------------- sign up
+# ---------------------------------------------------------------- sign up --------------------------------------------------------------------
 def test_register_role_comes_from_access_code(codes):
     assert auth.register_user("hruser", "hrpass1", "HRC") == "hr"
     assert auth.register_user("ituser", "itpass1", "ITC") == "it"
@@ -66,7 +66,7 @@ def test_bad_access_code_is_audited(codes, audit_entries):
     assert ("intruder", "-", "SIGNUP_BAD_CODE", "wrong access code") in audit_entries()
 
 
-# ---------------------------------------------------------------- sign in
+# ---------------------------------------------------------------- sign in --------------------------------------------------------------------------
 def test_authenticate_success_and_failures(codes, audit_entries):
     auth.register_user("hruser", "hrpass1", "HRC")
     assert auth.authenticate("hruser", "hrpass1") == "hr"
@@ -88,7 +88,7 @@ def test_old_pbkdf2_account_is_upgraded_to_bcrypt():
     assert auth.authenticate("legacy", "oldpass1") == "admin"  # still works afterwards
 
 
-# ------------------------------------------------------- change password
+# ------------------------------------------------------- change password ---------------------------------------------------------------------------
 def test_change_password(codes, audit_entries):
     auth.register_user("hruser", "hrpass1", "HRC")
     with pytest.raises(ServiceError, match="Current password is wrong"):

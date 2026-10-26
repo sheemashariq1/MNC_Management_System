@@ -1,6 +1,6 @@
 """Shared test setup.
 
-Tests use their OWN database (MNC_test). Your real MNC database is never touched.
+Tests use their OWN database (MNC_test). The real MNC database is never touched.
 Before every test the tables are emptied, so tests cannot affect each other.
 """
 import os

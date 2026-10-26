@@ -1,13 +1,11 @@
-"""Settings come from a `.env` file: never hard-coded, never committed to Git.
+"""Settings come from a `.env` file: never hard-coded, never committed to Git."""
 
-Copy `.env.example` to `.env` and fill in your own values.
-"""
 import os
 import re
 from pathlib import Path
 from dotenv import load_dotenv
 
-# read the .env that sits next to this file (works from any folder you run from)
+# read the .env that sits next to this file 
 load_dotenv(Path(__file__).with_name(".env"))
 
 ROLES = ("admin", "hr", "it")

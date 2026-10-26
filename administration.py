@@ -1,12 +1,5 @@
-"""Generic menu engine for the small tables: SERVICES, GAMES, RESTAURANT.
+"""Generic menu engine for the small tables: SERVICES, GAMES, RESTAURANT."""
 
-(Employees and departments moved to employees.py in Step 2, and all table
-definitions now live in schema.py.)
-
-ONE generic menu (crud_menu) is reused for every table, driven by the config
-dictionaries below. All SQL values go through %s placeholders. Updates and
-deletes always target the primary key, so only the one record you picked is touched.
-"""
 import audit
 import schema  # noqa: F401  (makes sure the tables exist)
 import session
@@ -40,7 +33,7 @@ RESTAURANT = {
 }
 
 
-# --------------------------------------------------------------- helpers
+# --------------------------------------------------------------- helpers --------------------------------------------------------------
 def _ask_value(label, kind, max_len=None):
     prompt = f"enter {label}: "
     if kind == "int":
@@ -91,7 +84,7 @@ def _find_one(cfg):
         print("That is not one of the listed records.")
 
 
-# ------------------------------------------------------------ operations
+# ------------------------------------------------------------ operations --------------------------------------------------------------
 def add_record(cfg):
     while True:
         names, values = [], []
@@ -203,7 +196,7 @@ def crud_menu(cfg):
             break
 
 
-# ------------------------------------------- entry points used by MNC.py
+# ------------------------------------------- entry points used by MNC.py --------------------------------------------------------------------------------------------
 def md():
     if session.require("ops"):
         crud_menu(SERVICES)

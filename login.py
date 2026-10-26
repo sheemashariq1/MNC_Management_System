@@ -5,7 +5,7 @@ services/auth_service.py, so it can be tested without typing anything.
 """
 import getpass
 
-import schema  # noqa: F401  (makes sure `users` exists and is upgraded)
+import schema 
 import session
 from helpers import ask_int, ask_text
 from services import ServiceError, auth_service

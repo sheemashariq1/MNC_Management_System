@@ -1,4 +1,3 @@
-"""Shapes of the JSON the API accepts (Pydantic checks types before our code runs)."""
 from datetime import date
 from typing import Optional
 
@@ -29,7 +28,7 @@ class EmployeeIn(BaseModel):
     field: Optional[str] = None
     salary: int
     date_of_joining: Optional[date] = None
-    department_id: Optional[int] = None      # hr / it users: their own department is the default
+    department_id: Optional[int] = None      
 
 
 class EmployeeUpdate(BaseModel):

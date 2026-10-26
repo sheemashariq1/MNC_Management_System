@@ -1,7 +1,5 @@
-# EXACT versions this project was tested with (Linux, Python 3.12).
 # Docker and GitHub Actions install from THIS file, so they always get the same,
-# working set. For everyday work on your own PC use requirements.txt instead.
-# Update it with:  pip install -r requirements.txt && pip freeze > requirements.lock.txt
+
 altair==6.3.0
 annotated-doc==0.0.5
 annotated-types==0.8.0

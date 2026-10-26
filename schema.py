@@ -1,19 +1,4 @@
 """All table definitions live here (one single place).
-
-Just importing this file creates any table that is missing, so every other
-file can simply `import schema` and be sure the tables exist.
-
-STEP 2 design (normalised):
-
-    departments            employees
-    -----------            ---------
-    dept_id  (PK)  <----   dept_id  (FOREIGN KEY)
-    dept_code              emp_id   (PK)
-    dept_name              emp_name, designation, field,
-    floor                  salary, date_of_joining
-
-One `employees` table for the whole company instead of a separate table per
-department. A new department = one new row in `departments`, no new code.
 """
 from database import run, fetch
 
@@ -77,7 +62,6 @@ def create_tables():
         "role varchar(10) not null)"
     )
     upgrade_users_table()
-    # who did what and when (Step 4)
     run(
         "create table if not exists audit_log("
         "audit_id int auto_increment primary key, "
@@ -87,7 +71,6 @@ def create_tables():
         "action varchar(30) not null, "
         "details varchar(255))"
     )
-    # these three are unchanged from Step 1
     run("create table if not exists SERVICES(Servicecode varchar(20) primary key,"
         "Service varchar(30) not null,Working_employees int)")
     run("create table if not exists GAMES(Gcode int primary key,"

@@ -7,7 +7,7 @@ from services import ServiceError
 
 EMP_HEADERS = ["Emp_id", "Name", "Designation", "Field", "Salary", "Joined", "Department"]
 
-# JOIN: take each employee row and attach its department name.
+
 EMP_SQL = (
     "select e.emp_id, e.emp_name, e.designation, e.field, e.salary, "
     "e.date_of_joining, d.dept_name "
@@ -15,7 +15,6 @@ EMP_SQL = (
 )
 
 # column -> (label, kind, max_len, required, position of that column in an EMP_SQL row)
-# This dict is also the WHITELIST of columns that may be edited.
 COLUMN_RULES = {
     "emp_name":        ("employee name", "text", 30, True, 1),
     "designation":     ("designation", "text", 25, True, 2),
@@ -53,7 +52,7 @@ def _department_name(dept_id):
     return rows[0][0]
 
 
-# ------------------------------------------------------------- reading
+# ------------------------------------------------------------- reading---------------------------------------------------------------
 def get_employee(emp_id):
     rows = fetch(EMP_SQL + " where e.emp_id = %s", (emp_id,))
     return rows[0] if rows else None
@@ -81,7 +80,7 @@ def find_employees(key, dept_id=None):
     return fetch(sql + " order by e.emp_id", tuple(params))
 
 
-# ------------------------------------------------------------- changing
+# ------------------------------------------------------------- changing----------------------------------------------------------------
 def add_employee(name, designation, field, salary, joined, dept_id):
     """Hire someone. Returns the new emp_id."""
     name = _check("emp_name", name)

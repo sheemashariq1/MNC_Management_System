@@ -1,12 +1,3 @@
-"""One-time migration: Step 1 tables (HRdept, ITdept)  ->  Step 2 tables.
-
-Run it ONCE:   python migrate_step2.py
-
-- Safe to run again: if `employees` already has rows it does nothing.
-- Old tables are NOT deleted. Check the data first, then drop them yourself.
-- Old employee ids are not kept (HR and IT both had id 1, 2, 3...). Every
-  employee gets a fresh unique emp_id in the new table.
-"""
 import schema  # creates departments + employees (and seeds departments)
 from database import mycon, run, fetch
 

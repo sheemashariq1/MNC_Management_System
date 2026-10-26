@@ -1,4 +1,4 @@
-"""Accounts and passwords (moved out of login.py so it can be tested)."""
+"""Accounts and passwords"""
 import hashlib
 import hmac
 
@@ -54,7 +54,7 @@ def check_password_rules(password):
         raise ServiceError(f"Password is too long (max {MAX_PASSWORD_BYTES} bytes).")
 
 
-# ------------------------------------------------------------ accounts
+# ------------------------------------------------------------ accounts------------------------------------------------------------------------
 def signup_enabled():
     return bool(config.ACCESS_CODES)
 

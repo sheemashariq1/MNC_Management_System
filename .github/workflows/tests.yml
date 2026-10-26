@@ -1,4 +1,3 @@
-# Runs all tests on every push and pull request (a green tick on GitHub).
 name: tests
 
 on:

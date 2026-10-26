@@ -1,4 +1,4 @@
-"""Dashboard tests.
+""" Dashboard tests.
 
 Streamlit's AppTest runs the REAL dashboard script without a browser. The dashboard's
 HTTP client is pointed at the FastAPI TestClient, so every click goes through the
@@ -75,7 +75,7 @@ def texts(elements):
     return [e.value for e in elements]
 
 
-# ============================================================== login / logout
+# ============================================================== login / logout ==================================================================
 def test_login_page_is_shown_first(api):
     at = open_app()
     assert texts(at.title) == ["MNC Management System"]
@@ -144,7 +144,7 @@ def test_api_not_running_gives_a_friendly_message(monkeypatch):
     assert "Cannot reach the API" in texts(at.error)[0]
 
 
-# ================================================================ role based menu
+# ================================================================ role based menu ================================================================================
 def test_admin_sees_every_page(api, admin):
     at = sign_in("boss")
     assert at.sidebar.radio(key="nav").options == [
@@ -158,7 +158,7 @@ def test_hr_and_it_see_only_three_pages(api, username, code):
     assert at.sidebar.radio(key="nav").options == ["Overview", "Employees", "My account"]
 
 
-# ==================================================================== overview
+# ==================================================================== overview ==================================================================================
 def test_overview_shows_live_numbers(api, admin, depts):
     hire_via_api(api, admin, "Asha", depts["HR"])
     hire_via_api(api, admin, "Meera", depts["IT"])
@@ -169,7 +169,7 @@ def test_overview_shows_live_numbers(api, admin, depts):
     assert len(at.dataframe[0].value) == 5
 
 
-# ================================================================== employees
+# ================================================================== employees ======================================================================================
 def test_hire_through_the_form(api, admin, depts, audit_entries):
     at = goto(sign_in("boss"), "Employees")
     at.text_input(key="hire_name_0").input("Neha")
@@ -287,7 +287,7 @@ def test_cannot_delete_a_department_with_employees(api, admin, depts):
     assert any("Cannot delete" in e for e in texts(at.error))
 
 
-# ======================================================================== users
+# ======================================================================== users ==========================================================================
 def test_users_page_protects_the_last_admin(api, admin):
     make_user(api, "hruser", "HRC")
     at = goto(sign_in("boss"), "Users")
@@ -302,7 +302,7 @@ def test_users_page_protects_the_last_admin(api, admin):
     assert any("hruser is now it" in s.value for s in at.success)
 
 
-# ================================================================ audit + reports
+# ================================================================ audit + reports ==========================================================================
 def test_audit_page_filters(api, admin, depts):
     hire_via_api(api, admin, "Asha", depts["HR"])
     at = goto(sign_in("boss"), "Audit log")
@@ -329,7 +329,7 @@ def test_reports_page_summary_and_download_button(api, admin, depts, tmp_path, m
     assert list(tmp_path.glob("*.xlsx"))                                # the API really wrote it
 
 
-# ====================================================================== account
+# ====================================================================== account =============================================================================
 def test_change_password_from_the_dashboard(api, admin):
     at = goto(sign_in("boss"), "My account")
     at.text_input(key="pw_current").input(PASSWORD)
@@ -344,7 +344,7 @@ def test_change_password_from_the_dashboard(api, admin):
     assert api.post("/auth/login", data={"username": "boss", "password": PASSWORD}).status_code == 401
 
 
-# ============================================================ friendly empty states
+# ============================================================ friendly empty states ===========================================================================
 def test_overview_has_a_friendly_empty_state(api, admin):
     at = sign_in("boss")                                              # nobody hired yet
     assert any("No employees yet" in i.value for i in at.info)

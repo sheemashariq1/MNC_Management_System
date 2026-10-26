@@ -11,7 +11,8 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
 WORKDIR /app
 
 # Install the libraries FIRST: Docker reuses this step (cache) until the lock file changes,
-# so changing only your code does not reinstall everything.
+# so changing only code does not reinstall everything.
+
 COPY requirements.lock.txt .
 RUN pip install -r requirements.lock.txt
 

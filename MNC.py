@@ -1,4 +1,3 @@
-"""Run this file:  python MNC.py"""
 from database import mycon
 import schema  # noqa: F401  (creates / checks all tables)
 import login

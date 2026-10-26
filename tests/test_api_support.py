@@ -11,7 +11,7 @@ from api.errors import status_for
 from services import ServiceError, auth_service as auth, department_service as dep, employee_service as emp
 
 
-# ------------------------------------------------------------- error -> status
+# ------------------------------------------------------------- error -> status ------------------------------------------------------
 @pytest.mark.parametrize("message, status", [
     ("Wrong username or password.", 401),
     ("Too many failed attempts. Try again in 15 minutes.", 429),
@@ -30,7 +30,7 @@ def test_status_for(message, status):
     assert status_for(message) == status
 
 
-# ------------------------------------------------- session is per thread / request
+# ------------------------------------------------- session is per thread / request -----------------------------------------------------
 def test_session_is_not_shared_between_threads():
     session.login_user("main-user", "admin")
     seen = {}
@@ -52,7 +52,7 @@ def test_role_can_works_without_a_session():
     assert not session.role_can(None, "overview")
 
 
-# --------------------------------------------------------------- thread safety
+# --------------------------------------------------------------- thread safety -------------------------------------------------------------
 def test_many_threads_can_add_employees_at_the_same_time(depts):
     """20 threads x 5 inserts on ONE shared connection: no mix-ups, no lost rows, correct ids."""
     results, errors = {}, []
@@ -84,7 +84,7 @@ def test_many_threads_can_add_employees_at_the_same_time(depts):
         assert rows[0][0] == 5
 
 
-# ---------------------------------------------------------------- new services
+# ---------------------------------------------------------------- new services ---------------------------------------------------------------
 def test_update_employee_fields_is_all_or_nothing(hire, audit_entries):
     emp_id = hire("Neha", salary=42000)
     with pytest.raises(ServiceError):
@@ -117,7 +117,7 @@ def test_audit_search_filters():
     assert len(audit.search(limit=2)) == 2
 
 
-# ------------------------------------------------------------------- lockout
+# ------------------------------------------------------------------- lockout -------------------------------------------------------------------
 def _fail(username, times):
     for _ in range(times):
         with pytest.raises(ServiceError, match="Wrong username or password"):
