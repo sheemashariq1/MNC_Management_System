@@ -1,5 +1,14 @@
 [theme]
+base = "light"
 primaryColor = "#2F6FDE"
+backgroundColor = "#FFFFFF"
+secondaryBackgroundColor = "#F1F5FB"
+textColor = "#1F2A44"
+font = "sans serif"
+baseRadius = "medium"
+
+[client]
+toolbarMode = "minimal"      # hides the developer "Deploy" button and menu
 
 [browser]
 gatherUsageStats = false

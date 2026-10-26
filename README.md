@@ -18,7 +18,7 @@ audit trail, reports, an API, a web dashboard, tests, CI and Docker.
 - **Audit log**: who changed what, when (old value to new value), including failed logins
 - **Reports**: department-wise salary summary (pandas), charts, Excel and CSV export
 - **Three ways to use it**: web dashboard, REST API (interactive docs at `/docs`), terminal menu
-- **163 automated tests** and a GitHub Actions workflow that runs them against a real MySQL
+- **165 automated tests** and a GitHub Actions workflow that runs them against a real MySQL
 
 ## Architecture
 
@@ -122,7 +122,7 @@ Interactive documentation: <http://localhost:8000/docs>. Log in with `POST /auth
 python -m pytest
 ```
 
-163 tests, run against their own `MNC_test` database (your real data is never touched):
+165 tests, run against their own `MNC_test` database (your real data is never touched):
 
 - services: validation, SQL-injection attempts, all-or-nothing updates, last-admin rules, lockout
 - API: every endpoint, tokens (forged, expired, unsigned, deleted user), role scoping, error codes
@@ -184,9 +184,10 @@ audit.py  reports.py    audit trail; pandas reports, charts, exports
 login.py  users.py  employees.py  administration.py     console screens
 helpers.py  logger.py   input checks and table printing; rotating log file
 migrate_step2.py        one-time migration from the old HRdept / ITdept tables
-tests/                  163 tests
+tests/                  165 tests
 Dockerfile  docker-compose.yml  requirements.txt  requirements.lock.txt  .env.example
 .github/workflows/      CI: runs the tests on every push
+demo_data.py            fills an empty database with 14 sample employees (for demos)
 ```
 
 ## Design decisions
@@ -209,13 +210,12 @@ Dockerfile  docker-compose.yml  requirements.txt  requirements.lock.txt  .env.ex
 
 ## Screenshots
 
-<!-- Add real screenshots to docs/screenshots/ and uncomment:
+
 ![Login](docs/screenshots/login.png)
 ![Overview](docs/screenshots/overview.png)
 ![Employees](docs/screenshots/employees.png)
 ![Reports](docs/screenshots/reports.png)
-![API docs](docs/screenshots/api-docs.png)
--->
+![Audit log](docs/screenshots/audit-log.png)
 
 ## Author
 

@@ -7,11 +7,15 @@ from screens import ui
 
 
 def show():
-    st.header("Departments")
+    ui.page_header("Departments", "Add, rename or remove the departments of the company.")
     ui.show_flash()
     rows = api_client.departments()
     st.dataframe(pd.DataFrame(rows, columns=["id", "code", "name", "floor", "employees"]),
-                 hide_index=True, width="stretch")
+                 hide_index=True, width="stretch", height=ui.table_height(len(rows)),
+                 column_config={"id": st.column_config.NumberColumn("ID", format="%d", width="small"),
+                                "code": "Code", "name": "Name",
+                                "floor": st.column_config.NumberColumn("Floor", format="%d"),
+                                "employees": st.column_config.NumberColumn("Employees", format="%d")})
 
     n = ui.nonce("dept_n")
     with st.expander("Add a department"):

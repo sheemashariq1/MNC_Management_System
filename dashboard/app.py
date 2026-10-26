@@ -11,10 +11,12 @@ sys.path.insert(0, str(HERE))                    # so `import api_client` / `scr
 import streamlit as st  # noqa: E402
 
 import api_client  # noqa: E402
-from screens import account, audit_log, departments, employees, login, overview, reports, users  # noqa: E402
+from screens import account, audit_log, departments, employees, login, overview, reports, ui, users  # noqa: E402
 
 st.set_page_config(page_title="MNC Management System", page_icon=str(HERE / "assets" / "icon.png"),
                    layout="wide")
+
+ui.inject_css()
 
 # page name -> (function that draws it, roles allowed; None = every role)
 PAGES = {
@@ -38,7 +40,8 @@ def main():
 
     with st.sidebar:
         st.image(str(HERE / "assets" / "logo.png"))
-        st.write(f"Signed in as **{st.session_state['username']}**  ({role})")
+        with st.container(border=True):
+            st.markdown(f"Signed in as **{st.session_state['username']}**  \n:blue-badge[{role}]")
         page = st.radio("Go to", allowed, key="nav")
         if st.button("Sign out", key="logout"):
             api_client.logout()

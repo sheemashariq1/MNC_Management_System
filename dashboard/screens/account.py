@@ -6,10 +6,11 @@ from screens import ui
 
 
 def show():
-    st.header("My account")
+    ui.page_header("My account", "Your sign-in details and password.")
     ui.show_flash()
-    st.write(f"Username: **{st.session_state['username']}**")
-    st.write(f"Role: **{st.session_state['role']}**")
+    with ui.card():
+        st.write(f"Username: **{st.session_state['username']}**")
+        st.markdown(f"Role: :blue-badge[{st.session_state['role']}]")
 
     st.subheader("Change password")
     with st.form("password_form"):

@@ -9,10 +9,12 @@ ROLES = ["admin", "hr", "it"]
 
 
 def show():
-    st.header("User accounts")
+    ui.page_header("User accounts", "Who can sign in, and with which role.")
     ui.show_flash()
     rows = api_client.users()
-    st.dataframe(pd.DataFrame(rows, columns=["username", "role"]), hide_index=True, width="stretch")
+    st.dataframe(pd.DataFrame(rows, columns=["username", "role"]), hide_index=True, width="stretch",
+                 height=ui.table_height(len(rows)),
+                 column_config={"username": "Username", "role": "Role"})
     names = [r["username"] for r in rows]
     me = st.session_state["username"]
 

@@ -6,8 +6,7 @@ from screens import ui
 
 
 def show():
-    st.header("Audit log")
-    st.caption("Who did what, and when. Newest first.")
+    ui.page_header("Audit log", "Who did what, and when. Newest first.")
     ui.show_flash()
     a, b, c = st.columns([2, 2, 1])
     username = a.text_input("Only this username", key="audit_user")
@@ -16,7 +15,12 @@ def show():
                            key="audit_limit")
     rows = api_client.audit(int(limit), username.strip() or None, action.strip() or None)
     if rows:
-        st.dataframe(pd.DataFrame(rows, columns=["id", "when", "username", "role", "action", "details"]),
-                     hide_index=True, width="stretch")
+        df = ui.to_days(pd.DataFrame(rows, columns=["id", "when", "username", "role", "action", "details"]),
+                        "when")
+        st.dataframe(df, hide_index=True, width="stretch", height=ui.table_height(len(df), 640),
+                     column_config={"id": st.column_config.NumberColumn("ID", format="%d", width="small"),
+                                    "when": st.column_config.DatetimeColumn("When", format="DD MMM YYYY, HH:mm:ss"),
+                                    "username": "User", "role": "Role", "action": "Action",
+                                    "details": st.column_config.TextColumn("Details", width="large")})
     else:
         st.info("No entries match.")

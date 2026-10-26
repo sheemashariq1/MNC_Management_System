@@ -342,3 +342,16 @@ def test_change_password_from_the_dashboard(api, admin):
     assert texts(at.success) == ["Password changed."]
     assert api.post("/auth/login", data={"username": "boss", "password": "brandnew1"}).status_code == 200
     assert api.post("/auth/login", data={"username": "boss", "password": PASSWORD}).status_code == 401
+
+
+# ============================================================ friendly empty states
+def test_overview_has_a_friendly_empty_state(api, admin):
+    at = sign_in("boss")                                              # nobody hired yet
+    assert any("No employees yet" in i.value for i in at.info)
+
+
+def test_search_with_no_match_shows_a_hint(api, admin, depts):
+    hire_via_api(api, admin, "Asha", depts["HR"])
+    at = goto(sign_in("boss"), "Employees")
+    at.text_input(key="emp_search").input("zzz-nobody").run()
+    assert any("No employees found" in i.value for i in at.info)

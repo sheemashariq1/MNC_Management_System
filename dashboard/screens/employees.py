@@ -11,9 +11,10 @@ COLUMNS = ["id", "name", "designation", "field", "salary", "date_of_joining", "d
 
 
 def show():
-    st.header("Employees")
-    ui.show_flash()
     is_admin = st.session_state["role"] == "admin"
+    ui.page_header("Employees", "Everyone in the company." if is_admin
+                   else "The people of your department.")
+    ui.show_flash()
     # only admins may list departments; for hr / it the API already limits everything
     dept_ids = {d["name"]: d["id"] for d in api_client.departments()} if is_admin else {}
 
@@ -27,9 +28,18 @@ def show():
 
     rows = api_client.employees(search or None, dept_id)
     if rows:
-        st.dataframe(pd.DataFrame(rows, columns=COLUMNS), hide_index=True, width="stretch")
+        df = ui.to_days(pd.DataFrame(rows, columns=COLUMNS), "date_of_joining")
+        df["field"] = df["field"].fillna("-")
+        st.dataframe(df, hide_index=True, width="stretch", height=ui.table_height(len(df)),
+                     column_config={"id": st.column_config.NumberColumn("ID", format="%d", width="small"),
+                                    "name": st.column_config.TextColumn("Name", width="medium"),
+                                    "designation": st.column_config.TextColumn("Designation", width="medium"),
+                                    "field": "Field",
+                                    "salary": ui.money("Salary"),
+                                    "date_of_joining": ui.day("Joined"),
+                                    "department": st.column_config.TextColumn("Department", width="large")})
     else:
-        st.info("No employees found.")
+        st.info("No employees found. Try another search, or hire someone below.")
     st.caption(f"{len(rows)} employee(s)")
 
     _hire_form(is_admin, dept_ids)
