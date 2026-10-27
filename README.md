@@ -213,9 +213,11 @@ demo_data.py            fills an empty database with 14 sample employees (for de
 
 ![Login](docs/screenshots/login.png)
 ![Overview](docs/screenshots/overview.png)
+![Departments](docs/screenshots/departments.png)
 ![Employees](docs/screenshots/employees.png)
 ![Reports](docs/screenshots/reports.png)
 ![Audit log](docs/screenshots/audit-log.png)
+![API docs](docs/screenshots/api-docs.png)
 
 ## Author
 
