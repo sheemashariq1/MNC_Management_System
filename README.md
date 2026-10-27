@@ -168,7 +168,7 @@ python MNC.py                                      # optional: console app
 Create the first account on the dashboard's **Create account** tab using your `ADMIN_ACCESS_CODE`.
 
 If you still have data from the very first version (tables `HRdept` and `ITdept`), run
-`python migrate_step2.py` once.
+`python migrate_legacy_tables.py` once.
 
 ## Project structure
 
@@ -183,7 +183,7 @@ config.py  session.py   settings from .env; who is logged in (per request) and w
 audit.py  reports.py    audit trail; pandas reports, charts, exports
 login.py  users.py  employees.py  administration.py     console screens
 helpers.py  logger.py   input checks and table printing; rotating log file
-migrate_step2.py        one-time migration from the old HRdept / ITdept tables
+migrate_legacy_tables.py        one-time migration from the old HRdept / ITdept tables
 tests/                  165 tests
 Dockerfile  docker-compose.yml  requirements.txt  requirements.lock.txt  .env.example
 .github/workflows/      CI: runs the tests on every push

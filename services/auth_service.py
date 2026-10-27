@@ -16,14 +16,14 @@ LOCK_MINUTES = 15                # ... lock the account for this long
 MAX_PASSWORD_BYTES = 72          # bcrypt only uses the first 72 bytes
 
 
-# ------------------------------------------------------------- hashing
+# ------------------------------------------------------------- hashing ----------------------------------------------------
 def hash_password(password):
     """bcrypt hash as text (60 characters)."""
     return bcrypt.hashpw(password.encode(), bcrypt.gensalt()).decode()
 
 
 def _legacy_hash(password, salt_hex):
-    """The Step 2 hash, kept only so old accounts can still sign in once."""
+    """Old PBKDF2 hash, kept so accounts created before bcrypt can still sign in once."""
     return hashlib.pbkdf2_hmac(
         "sha256", password.encode(), bytes.fromhex(salt_hex), 200_000
     ).hex()

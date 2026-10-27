@@ -20,7 +20,7 @@ def _column_exists(table, column):
 
 
 def upgrade_users_table():
-    """Step 2 -> Step 3: add `role`, make room for bcrypt hashes.
+    """Add the role column and widen pass_hash for bcrypt, on databases created before roles existed.
 
     Old accounts keep working: they become 'admin' and their password is
     converted to bcrypt automatically the next time they sign in.

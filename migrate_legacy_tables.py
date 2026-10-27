@@ -1,3 +1,10 @@
+"""Copy the employees from the old HRdept and ITdept tables into the new employees table.
+   Run once with:  python migrate_legacy_tables.py
+   It does nothing if the employees table already has rows. The old tables are left
+   as they are, so check the data and drop them yourself. Employee ids change,
+   because HR and IT both started from id 1.
+"""
+
 import schema  # creates departments + employees (and seeds departments)
 from database import mycon, run, fetch
 
