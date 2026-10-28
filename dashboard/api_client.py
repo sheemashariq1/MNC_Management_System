@@ -31,7 +31,7 @@ def http():
     return _client
 
 
-# ------------------------------------------------------------------ session
+# ------------------------------------------------------------------ session ----------------------------------------------------------------------
 def logout(flash=None):
     for key in list(st.session_state.keys()):
         if key in ("token", "username", "role") or key.startswith("report_"):
@@ -64,7 +64,7 @@ def _request(method, path, **kwargs):
         raise ApiError(0, "Cannot reach the API. Is it running?  "
                           "(python -m uvicorn api.main:app --reload)")
     if response.status_code == 401 and token:
-        # token expired, or the account was deleted: back to the login page
+        # token expired or the account was deleted: back to the login page
         logout("Your session has ended. Please sign in again.")
         st.rerun()
     if response.status_code >= 400:
@@ -83,7 +83,7 @@ def _download(path):
     return response.content, name
 
 
-# --------------------------------------------------------------------- auth
+# --------------------------------------------------------------------- auth ------------------------------------------------------------------------
 def login(username, password):
     return _json("POST", "/auth/login", data={"username": username, "password": password})
 
@@ -98,7 +98,7 @@ def change_password(current_password, new_password):
         "current_password": current_password, "new_password": new_password})
 
 
-# ---------------------------------------------------------------- employees
+# ---------------------------------------------------------------- employees -------------------------------------------------------------------------
 def employees(search=None, department_id=None):
     params = {}
     if search:
@@ -124,7 +124,7 @@ def terminate_employee(emp_id):
     return _json("DELETE", f"/employees/{emp_id}")
 
 
-# -------------------------------------------------------------- departments
+# -------------------------------------------------------------- departments -----------------------------------------------------------------------------
 def overview():
     return _json("GET", "/departments/overview")
 
@@ -145,7 +145,7 @@ def delete_department(dept_id):
     return _json("DELETE", f"/departments/{dept_id}")
 
 
-# -------------------------------------------------------------------- users
+# -------------------------------------------------------------------- users ------------------------------------------------------------------------------
 def users():
     return _json("GET", "/users")
 
@@ -158,7 +158,7 @@ def delete_user(username):
     return _json("DELETE", f"/users/{username}")
 
 
-# ------------------------------------------------------------ reports, audit
+# ------------------------------------------------------------ reports, audit ------------------------------------------------------------------------------
 def report_summary():
     return _json("GET", "/reports/summary")
 

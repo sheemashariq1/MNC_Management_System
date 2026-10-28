@@ -69,7 +69,7 @@ def run(query, params=()):
             return mycursor.rowcount
         except ms.Error as err:
             mycon.rollback()
-            log.error("query failed: %s | %s", err, query)   # values are NOT logged (may be secrets)
+            log.error("query failed: %s | %s", err, query)   # values are NOT logged 
             print("Database error:", err)
             return None
 

@@ -1,8 +1,8 @@
 """Reports (pandas), charts (matplotlib) and exports (Excel / CSV).
-
 Everything is saved inside a `reports/` folder next to this file.
 Admin only (feature "reports").
 """
+
 import webbrowser
 from datetime import datetime
 from pathlib import Path
@@ -24,7 +24,7 @@ SUMMARY_HEADERS = ["Department", "Employees", "Total salary", "Average salary",
                    "Median salary", "Highest salary", "Avg years of service"]
 
 
-# ------------------------------------------------------------ load data
+# ------------------------------------------------------------ load data -------------------------------------------------------------------------------
 def load_employees():
     """All employees as a pandas DataFrame (a table in memory)."""
     rows = fetch(EMP_SQL + " order by e.emp_id")
@@ -63,7 +63,7 @@ def _clean(df):
     return df.astype(object).where(df.notna(), None)
 
 
-# ---------------------------------------------------------------- charts
+# ---------------------------------------------------------------- charts ------------------------------------------------------------------------
 def _save_chart(fig, name):
     REPORT_DIR.mkdir(exist_ok=True)
     path = REPORT_DIR / f"{name}_{datetime.now():%Y%m%d_%H%M%S}.png"
@@ -79,7 +79,7 @@ def _bar_chart(labels, values, title, ylabel, color, whole_numbers=False):
     ax.set_title(title, fontweight="bold")
     ax.set_ylabel(ylabel)
     ax.spines[["top", "right"]].set_visible(False)
-    if whole_numbers:                      # counts of people: 1, 2, 3 (never 1.5)
+    if whole_numbers:                    
         ax.yaxis.set_major_locator(MaxNLocator(integer=True))
     plt.setp(ax.get_xticklabels(), rotation=25, ha="right")
     return fig
@@ -141,7 +141,7 @@ def charts_menu(df, summary):
                 webbrowser.open(p.as_uri())
 
 
-# --------------------------------------------------------------- exports
+# --------------------------------------------------------------- exports ----------------------------------------------------------------------------
 def _autowidth(sheet):
     for column in sheet.columns:
         longest = max(len(str(c.value)) if c.value is not None else 0 for c in column)
@@ -175,7 +175,7 @@ def export_csv(df):
     return path
 
 
-# ------------------------------------------------------------------ menu
+# ------------------------------------------------------------------ menu ------------------------------------------------------------------
 def report_menu():
     if not session.require("reports"):
         return
@@ -189,7 +189,7 @@ def report_menu():
         choice = ask_int("Enter your choice: ", 1, 6)
         if choice == 6:
             break
-        df = load_employees()                 # always fresh from the database
+        df = load_employees()                 
         if df.empty:
             print("There are no employees yet, so there is nothing to report.")
             continue

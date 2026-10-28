@@ -10,7 +10,7 @@ BRAND = "#2F6FDE"
 LOGO = Path(__file__).resolve().parents[1] / "assets" / "logo.png"
 
 
-# ------------------------------------------------------------------ messages
+# ------------------------------------------------------------------ messages --------------------------------------------------------------------
 def flash(message, kind="success"):
     """Show a message AFTER the next rerun (st.rerun() would erase a normal st.success)."""
     st.session_state["_flash"] = (kind, message)
@@ -36,7 +36,7 @@ def to_date(text):
     return dt.date.fromisoformat(text) if text else None
 
 
-# --------------------------------------------------------------------- looks
+# --------------------------------------------------------------------- looks -----------------------------------------------------------------------
 def inject_css():
     """A few small touches the theme file cannot do."""
     st.markdown(
@@ -85,7 +85,7 @@ def bar_chart(df, category, value, color=BRAND, whole_numbers=False, number_form
     st.altair_chart(chart, width="stretch")
 
 
-# --------------------------------------------------------------- table looks
+# --------------------------------------------------------------- table looks ----------------------------------------------------------------------
 def money(label):
     return st.column_config.NumberColumn(label, format="localized")
 

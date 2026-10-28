@@ -89,7 +89,7 @@ if __name__ == "__main__":
     except KeyboardInterrupt:
         print("\nBye!")
     except Exception:
-        log.exception("unexpected crash")     # poori detail logs/mnc.log mein
+        log.exception("unexpected crash")  
         print("Something went wrong. Details are saved in logs/mnc.log")
     finally:
         mycon.close()
