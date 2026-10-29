@@ -8,7 +8,6 @@ import audit
 import config
 from database import run, fetch
 from services import ServiceError
-from session import username
 
 MIN_PASSWORD_LENGTH = 6
 MAX_FAILED_ATTEMPTS = 5          # wrong passwords in a row ...

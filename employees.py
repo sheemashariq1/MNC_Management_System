@@ -10,9 +10,7 @@ from helpers import (ask_text, ask_optional, ask_int, ask_date, ask_yes,
                      print_rows)
 from services import ServiceError, department_service, employee_service
 
-from services.department_service import overview_rows  
-from services.employee_service import COLUMN_RULES, EMP_HEADERS, EMP_SQL  
-
+from services.employee_service import COLUMN_RULES, EMP_HEADERS
 
 EDITABLE = [
     (col, label, "optional" if kind == "text" and not required else kind, max_len)

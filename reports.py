@@ -16,7 +16,7 @@ from matplotlib.ticker import MaxNLocator
 import audit
 import session
 from database import fetch
-from employees import EMP_HEADERS, EMP_SQL
+from services.employee_service import EMP_HEADERS, EMP_SQL
 from helpers import ask_int, ask_yes, print_rows
 
 REPORT_DIR = Path(__file__).with_name("reports")

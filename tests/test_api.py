@@ -298,3 +298,8 @@ def test_reports(client, admin, depts, tmp_path, monkeypatch):
     assert xlsx.status_code == 200 and xlsx.content[:2] == b"PK"                  # a real .xlsx (zip)
     csv = client.get("/reports/export/csv", headers=admin)
     assert csv.status_code == 200 and "Asha" in csv.text
+
+def test_search_with_odd_digit_characters_does_not_crash(client, admin, depts):
+    hire(client, admin, name="Asha", department_id=depts["HR"])
+    for text in ("²", "٣", "99999999999999999999"):
+        assert client.get("/employees", params={"search": text}, headers=admin).status_code == 200

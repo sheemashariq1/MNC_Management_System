@@ -54,7 +54,7 @@ def _select_sql(cfg):
 def _lookup(cfg, key):
     """All records whose id OR name equals `key`."""
     sel = _select_sql(cfg)
-    if cfg["pk_kind"] == "int" and not key.isdigit():
+    if cfg["pk_kind"] == "int" and not key.isdecimal():
         return fetch(f"{sel} where {cfg['name']} = %s", (key,))
     if cfg["pk_kind"] == "int":
         return fetch(f"{sel} where {cfg['pk']} = %s or {cfg['name']} = %s",

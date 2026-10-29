@@ -7,6 +7,7 @@ import session
 import users
 import administration as a
 import employees as emp
+from services import department_service
 from helpers import ask_int, print_rows
 from logger import get_logger
 log = get_logger("main")
@@ -25,7 +26,7 @@ BANNER = """
 def building_overview():
     print("====== AN OVERVIEW OF THE MNC BUILDING ======")
     # live numbers: counted from the employees table (JOIN + GROUP BY)
-    print_rows(["FLOOR", "DEPARTMENT", "NO_OF_EMPLOYEES_WORKING"], emp.overview_rows())
+    print_rows(["FLOOR", "DEPARTMENT", "NO_OF_EMPLOYEES_WORKING"], department_service.overview_rows())
 
 
 def run_menu(items, back_label):

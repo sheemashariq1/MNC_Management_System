@@ -70,7 +70,7 @@ def find_employees(key, dept_id=None):
     """Employees whose name (or id, if key is a number) matches. dept_id=None -> all."""
     sql = EMP_SQL + " where (e.emp_name = %s"
     params = [key]
-    if key.isdigit():
+    if key.isdecimal():
         sql += " or e.emp_id = %s"
         params.append(int(key))
     sql += ")"
