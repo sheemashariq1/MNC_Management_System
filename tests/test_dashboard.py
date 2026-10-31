@@ -355,3 +355,30 @@ def test_search_with_no_match_shows_a_hint(api, admin, depts):
     at = goto(sign_in("boss"), "Employees")
     at.text_input(key="emp_search").input("zzz-nobody").run()
     assert any("No employees found" in i.value for i in at.info)
+
+def test_employee_table_is_paged(api, admin, depts):
+    for i in range(30):
+        hire_via_api(api, admin, f"Person {i:02d}", depts["HR"])
+    at = goto(sign_in("boss"), "Employees")
+    assert len(at.dataframe[0].value) == 25
+    assert any("Showing 1-25 of 30" in c.value for c in at.caption)
+    assert at.button(key="emp_prev").disabled
+
+    at.button(key="emp_next").click().run()
+    assert list(at.dataframe[0].value["name"]) == [f"Person {i:02d}" for i in range(25, 30)]
+    assert any("Showing 26-30 of 30" in c.value for c in at.caption)
+    assert at.button(key="emp_next").disabled
+
+    at.text_input(key="emp_search").input("Person 07").run()      # a new search starts at page 1
+    assert list(at.dataframe[0].value["name"]) == ["Person 07"]
+    assert any("Showing 1-1 of 1" in c.value for c in at.caption)
+
+
+def test_changing_rows_per_page_goes_back_to_the_first_page(api, admin, depts):
+    for i in range(30):
+        hire_via_api(api, admin, f"Person {i:02d}", depts["HR"])
+    at = goto(sign_in("boss"), "Employees")
+    at.button(key="emp_next").click().run()
+    at.selectbox(key="emp_page_size").set_value(10).run()
+    assert len(at.dataframe[0].value) == 10
+    assert any("Page 1 of 3" in c.value for c in at.caption)

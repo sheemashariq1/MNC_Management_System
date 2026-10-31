@@ -58,26 +58,44 @@ def get_employee(emp_id):
     return rows[0] if rows else None
 
 
-def list_employees(dept_id=None):
-    sql, params = EMP_SQL, ()
+def _filter(key, dept_id):
+    """The where clause and its values, shared by the list, search and count queries."""
+    conditions, params = [], []
+    if key is not None:
+        match = "e.emp_name = %s"
+        params.append(key)
+        if key.isdecimal():
+            match += " or e.emp_id = %s"
+            params.append(int(key))
+        conditions.append(f"({match})")
     if dept_id is not None:
-        sql += " where e.dept_id = %s"
-        params = (dept_id,)
-    return fetch(sql + " order by e.emp_id", params)
+        conditions.append("e.dept_id = %s")
+        params.append(dept_id)
+    where = " where " + " and ".join(conditions) if conditions else ""
+    return where, params
+
+
+def employees_page(key=None, dept_id=None, limit=None, offset=0):
+    """One page of employees and how many match in total. Returns (rows, total).
+
+    key matches a name (or an id when it is a number), dept_id limits it to one
+    department. Without a limit you get every matching row.
+    """
+    where, params = _filter(key, dept_id)
+    total = fetch("select count(*) from employees e" + where, tuple(params))[0][0]
+    sql = EMP_SQL + where + " order by e.emp_id"
+    if limit is not None:
+        sql += " limit %s offset %s"
+        params = params + [limit, offset]
+    return fetch(sql, tuple(params)), total
+
+
+def list_employees(dept_id=None):
+    return employees_page(None, dept_id)[0]
 
 
 def find_employees(key, dept_id=None):
-    """Employees whose name (or id, if key is a number) matches. dept_id=None -> all."""
-    sql = EMP_SQL + " where (e.emp_name = %s"
-    params = [key]
-    if key.isdecimal():
-        sql += " or e.emp_id = %s"
-        params.append(int(key))
-    sql += ")"
-    if dept_id is not None:
-        sql += " and e.dept_id = %s"
-        params.append(dept_id)
-    return fetch(sql + " order by e.emp_id", tuple(params))
+    return employees_page(key, dept_id)[0]
 
 
 # ------------------------------------------------------------- changing----------------------------------------------------------------

@@ -16,6 +16,8 @@ MYSQL_PASSWORD = os.getenv("MYSQL_PASSWORD", "")   # empty -> we ask with getpas
 MYSQL_DATABASE = os.getenv("MYSQL_DATABASE", "MNC").strip()   # tests use MNC_test
 if not re.fullmatch(r"[A-Za-z0-9_]+", MYSQL_DATABASE):
     raise ValueError("MYSQL_DATABASE may only contain letters, digits and _")
+# how many database connections the program keeps open (between 1 and 32)
+MYSQL_POOL_SIZE = max(1, min(int(os.getenv("MYSQL_POOL_SIZE", "5")), 32))
 JWT_SECRET = os.getenv("JWT_SECRET", "").strip()
 JWT_EXPIRE_MINUTES = int(os.getenv("JWT_EXPIRE_MINUTES", "60"))
 

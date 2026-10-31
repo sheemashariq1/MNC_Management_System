@@ -25,18 +25,29 @@ def log(action, details="", username=None, role=None):
         (who, (role or session.role() or "-")[:10], action[:30], str(details)[:255]),
     )
 
-def search(limit=50, username=None, action=None):
-    """Newest first. Optional: exact username and / or part of an action name."""
-    sql, conditions, params = _SELECT, [], []
+def _where(username, action):
+    conditions, params = [], []
     if username:
         conditions.append("username = %s")
         params.append(username)
     if action:
         conditions.append("action like %s")
         params.append("%" + action.upper() + "%")
-    if conditions:
-        sql += " where " + " and ".join(conditions)
-    return fetch(sql + " order by audit_id desc limit %s", (*params, limit))
+    where = " where " + " and ".join(conditions) if conditions else ""
+    return where, params
+
+
+def search(limit=50, username=None, action=None, offset=0):
+    """Newest first. Optional: exact username and / or part of an action name."""
+    where, params = _where(username, action)
+    return fetch(_SELECT + where + " order by audit_id desc limit %s offset %s",
+                 (*params, limit, offset))
+
+
+def count(username=None, action=None):
+    """How many entries match, ignoring limit and offset."""
+    where, params = _where(username, action)
+    return fetch("select count(*) from audit_log" + where, tuple(params))[0][0]
 
 def _show(rows):
     # long details would wrap badly in the terminal, so cut them for display

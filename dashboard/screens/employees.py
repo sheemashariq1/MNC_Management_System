@@ -10,6 +10,10 @@ from screens import ui
 COLUMNS = ["id", "name", "designation", "field", "salary", "date_of_joining", "department"]
 
 
+def _first_page():
+    st.session_state["emp_page"] = 1
+
+
 def show():
     is_admin = st.session_state["role"] == "admin"
     ui.page_header("Employees", "Everyone in the company." if is_admin
@@ -19,14 +23,22 @@ def show():
     dept_ids = {d["name"]: d["id"] for d in api_client.departments()} if is_admin else {}
 
     left, right = st.columns([2, 1])
-    search = left.text_input("Search by name or id", key="emp_search")
+    search = left.text_input("Search by name or id", key="emp_search", on_change=_first_page)
     dept_id = None
     if is_admin:
         choice = right.selectbox("Department", ["All departments"] + list(dept_ids),
-                                 key="emp_dept_filter")
+                                 key="emp_dept_filter", on_change=_first_page)
         dept_id = dept_ids.get(choice)
 
-    rows = api_client.employees(search or None, dept_id)
+    page = st.session_state.get("emp_page", 1)
+    size = st.session_state.get("emp_page_size", 25)
+    rows, total = api_client.employees_page(search or None, dept_id, size, (page - 1) * size)
+    pages = max(1, -(-total // size))
+    if page > pages:
+        # the page no longer exists, for example after the last person on it was terminated
+        st.session_state["emp_page"] = pages
+        st.rerun()
+
     if rows:
         df = ui.to_days(pd.DataFrame(rows, columns=COLUMNS), "date_of_joining")
         df["field"] = df["field"].fillna("-")
@@ -40,11 +52,26 @@ def show():
                                     "department": st.column_config.TextColumn("Department", width="large")})
     else:
         st.info("No employees found. Try another search, or hire someone below.")
-    st.caption(f"{len(rows)} employee(s)")
+    _pager(page, size, total, pages)
 
     _hire_form(is_admin, dept_ids)
     if rows:
         _manage(rows, is_admin, dept_ids)
+
+
+def _pager(page, size, total, pages):
+    first = (page - 1) * size + 1 if total else 0
+    last = min(page * size, total)
+    back, info, per_page, forward = st.columns([1, 3, 2, 1], vertical_alignment="bottom")
+    if back.button("Previous", key="emp_prev", disabled=page <= 1):
+        st.session_state["emp_page"] = page - 1
+        st.rerun()
+    info.caption(f"Showing {first}-{last} of {total} employees. Page {page} of {pages}.")
+    per_page.selectbox("Rows per page", [10, 25, 50], index=1, key="emp_page_size",
+                       on_change=_first_page)
+    if forward.button("Next", key="emp_next", disabled=page >= pages):
+        st.session_state["emp_page"] = page + 1
+        st.rerun()
 
 
 def _hire_form(is_admin, dept_ids):

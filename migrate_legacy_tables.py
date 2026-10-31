@@ -6,7 +6,7 @@
 """
 
 import schema  # creates departments + employees (and seeds departments)
-from database import mycon, run, fetch
+from database import close, run, fetch
 
 
 def table_exists(name):
@@ -54,4 +54,4 @@ def migrate():
 
 if __name__ == "__main__":
     migrate()
-    mycon.close()
+    close()

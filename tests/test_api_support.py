@@ -145,3 +145,12 @@ def test_successful_login_resets_the_failure_count(codes):
     assert auth.authenticate("hruser", "hrpass1") == "hr"        # success resets the counter
     _fail("hruser", 4)                                           # 4 again: still not locked
     assert auth.authenticate("hruser", "hrpass1") == "hr"
+
+def test_audit_paging():
+    for i in range(5):
+        audit.log("PAGE_TEST", f"entry {i}", username="u1")
+    assert audit.count(action="page_test") == 5
+    first = audit.search(limit=2, action="PAGE_TEST")
+    second = audit.search(limit=2, action="PAGE_TEST", offset=2)
+    assert [row[5] for row in first] == ["entry 4", "entry 3"]
+    assert [row[5] for row in second] == ["entry 2", "entry 1"]

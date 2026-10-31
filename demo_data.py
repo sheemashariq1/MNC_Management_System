@@ -5,7 +5,7 @@ If the database already has employees it does nothing, so it can never make dupl
 The names and numbers are made up.
 """
 import schema  # noqa: F401  (makes sure the tables and the 5 departments exist)
-from database import mycon, run, fetch
+from database import close, run, fetch
 
 # name, designation, field, salary, date of joining, department code
 ROWS = [
@@ -40,4 +40,4 @@ def main():
 
 if __name__ == "__main__":
     main()
-    mycon.close()
+    close()

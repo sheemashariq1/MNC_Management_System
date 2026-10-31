@@ -1,4 +1,4 @@
-from database import mycon
+import database
 import schema  # noqa: F401  (creates / checks all tables)
 import login
 import audit
@@ -93,4 +93,4 @@ if __name__ == "__main__":
         log.exception("unexpected crash")  
         print("Something went wrong. Details are saved in logs/mnc.log")
     finally:
-        mycon.close()
+        database.close()

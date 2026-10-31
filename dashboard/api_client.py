@@ -99,13 +99,15 @@ def change_password(current_password, new_password):
 
 
 # ---------------------------------------------------------------- employees -------------------------------------------------------------------------
-def employees(search=None, department_id=None):
-    params = {}
+def employees_page(search=None, department_id=None, limit=25, offset=0):
+    """One page of employees and the total number of matches."""
+    params = {"limit": limit, "offset": offset}
     if search:
         params["search"] = search
     if department_id is not None:
         params["department_id"] = department_id
-    return _json("GET", "/employees", params=params)
+    response = _request("GET", "/employees", params=params)
+    return response.json(), int(response.headers.get("x-total-count", 0))
 
 
 def create_employee(payload):

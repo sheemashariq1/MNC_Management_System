@@ -1,7 +1,5 @@
 from typing import Optional
-
-from fastapi import APIRouter, Depends, HTTPException
-
+from fastapi import APIRouter, Depends, HTTPException, Query, Response
 from api.deps import CurrentUser, get_current_user
 from api.schemas import EmployeeIn, EmployeeUpdate, TransferIn
 from services import department_service, employee_service
@@ -40,16 +38,21 @@ def _visible_employee(emp_id, scope):
 
 
 @router.get("")
-def list_employees(search: Optional[str] = None, department_id: Optional[int] = None,
+def list_employees(response: Response, search: Optional[str] = None,
+                   department_id: Optional[int] = None,
+                   limit: int = Query(50, ge=1, le=200), offset: int = Query(0, ge=0),
                    user: CurrentUser = Depends(get_current_user)):
-    """admin: everybody (optionally one department).  hr / it: only their own department."""
+    """admin: everybody (optionally one department).  hr / it: only their own department.
+
+    Paged with `limit` and `offset`; the total number of matches is in the X-Total-Count header.
+    """
     scope = _scope(user)
     if scope is not None:
         if department_id not in (None, scope[0]):
             raise HTTPException(403, "You may only see your own department.")
         department_id = scope[0]
-    rows = (employee_service.find_employees(search, department_id) if search
-            else employee_service.list_employees(department_id))
+    rows, total = employee_service.employees_page(search or None, department_id, limit, offset)
+    response.headers["X-Total-Count"] = str(total)
     return [_to_dict(r) for r in rows]
 
 

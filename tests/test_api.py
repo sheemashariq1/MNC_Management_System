@@ -303,3 +303,38 @@ def test_search_with_odd_digit_characters_does_not_crash(client, admin, depts):
     hire(client, admin, name="Asha", department_id=depts["HR"])
     for text in ("²", "٣", "99999999999999999999"):
         assert client.get("/employees", params={"search": text}, headers=admin).status_code == 200
+
+
+def test_employee_list_is_paged(client, admin, depts):
+    for i in range(5):
+        hire(client, admin, name=f"Person {i}", department_id=depts["HR"])
+    response = client.get("/employees", params={"limit": 2, "offset": 1}, headers=admin)
+    assert [e["name"] for e in response.json()] == ["Person 1", "Person 2"]
+    assert response.headers["x-total-count"] == "5"
+    last = client.get("/employees", params={"limit": 2, "offset": 4}, headers=admin)
+    assert [e["name"] for e in last.json()] == ["Person 4"]
+    beyond = client.get("/employees", params={"offset": 50}, headers=admin)
+    assert beyond.json() == [] and beyond.headers["x-total-count"] == "5"
+
+
+@pytest.mark.parametrize("params", [{"limit": 0}, {"limit": 201}, {"offset": -1}])
+def test_paging_values_are_checked(client, admin, params):
+    assert client.get("/employees", params=params, headers=admin).status_code == 422
+
+
+def test_total_count_only_counts_what_the_role_may_see(client, admin, hr, depts):
+    hire(client, admin, name="Asha", department_id=depts["HR"])
+    hire(client, admin, name="Neha", department_id=depts["HR"])
+    hire(client, admin, name="Meera", department_id=depts["IT"])
+    assert client.get("/employees", headers=admin).headers["x-total-count"] == "3"
+    assert client.get("/employees", headers=hr).headers["x-total-count"] == "2"
+    searched = client.get("/employees", params={"search": "Meera"}, headers=admin)
+    assert searched.headers["x-total-count"] == "1"
+
+
+def test_audit_log_is_paged(client, admin, depts):
+    hire(client, admin, name="Asha", department_id=depts["HR"])
+    first = client.get("/audit", params={"limit": 1}, headers=admin)
+    second = client.get("/audit", params={"limit": 1, "offset": 1}, headers=admin)
+    assert first.json()[0]["id"] != second.json()[0]["id"]
+    assert int(first.headers["x-total-count"]) >= 2

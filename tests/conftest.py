@@ -31,12 +31,14 @@ TABLES = ["employees", "departments", "users", "audit_log", "SERVICES", "GAMES",
 def clean_db():
     """Runs before EVERY test: empty tables, 5 starting departments, admin logged in."""
     assert config.MYSQL_DATABASE.endswith("_test"), "refusing to wipe a non-test database"
-    cur = database.mycursor
-    cur.execute("SET FOREIGN_KEY_CHECKS = 0")
-    for table in TABLES:
-        cur.execute(f"truncate table {table}")
-    cur.execute("SET FOREIGN_KEY_CHECKS = 1")
-    database.mycon.commit()
+    # one connection for all statements, because the foreign key setting belongs to a connection
+    with database.connection() as conn:
+        cur = conn.cursor()
+        cur.execute("SET FOREIGN_KEY_CHECKS = 0")
+        for table in TABLES:
+            cur.execute(f"truncate table {table}")
+        cur.execute("SET FOREIGN_KEY_CHECKS = 1")
+        cur.close()
     schema.create_tables()
     session.login_user("tester", "admin")
     yield

@@ -18,7 +18,7 @@ audit trail, reports, an API, a web dashboard, tests, CI and Docker.
 - **Audit log**: who changed what, when (old value to new value), including failed logins
 - **Reports**: department-wise salary summary (pandas), charts, Excel and CSV export
 - **Three ways to use it**: web dashboard, REST API (interactive docs at `/docs`), terminal menu
-- **165 automated tests** and a GitHub Actions workflow that runs them against a real MySQL
+- **178 automated tests** and a GitHub Actions workflow that runs them against a real MySQL
 
 ## Architecture
 
@@ -101,6 +101,7 @@ Interactive documentation: <http://localhost:8000/docs>. Log in with `POST /auth
 | System | `GET /health` |
 
 23 operations in total. Errors are clean JSON with the right status code (400, 401, 403, 404, 409, 422, 429).
+Employee and audit-log lists are paged with `limit` and `offset`; the total number of matches comes back in the `X-Total-Count` header.
 
 ## Security
 
@@ -122,7 +123,7 @@ Interactive documentation: <http://localhost:8000/docs>. Log in with `POST /auth
 python -m pytest
 ```
 
-165 tests, run against their own `MNC_test` database (your real data is never touched):
+178 tests, run against their own `MNC_test` database (your real data is never touched):
 
 - services: validation, SQL-injection attempts, all-or-nothing updates, last-admin rules, lockout
 - API: every endpoint, tokens (forged, expired, unsigned, deleted user), role scoping, error codes
@@ -177,14 +178,14 @@ MNC.py                  console app entry point
 api/                    FastAPI: main.py, security.py (JWT), deps.py, schemas.py, errors.py, routers/
 dashboard/              Streamlit: app.py, api_client.py (only file that calls the API), screens/, assets/
 services/               business rules: auth, employee, department, user (no input() / print())
-database.py             one shared connection, lock, run() / fetch() helpers
+database.py             connection pool, run() / fetch() helpers
 schema.py               all tables, created automatically
 config.py  session.py   settings from .env; who is logged in (per request) and what they may do
 audit.py  reports.py    audit trail; pandas reports, charts, exports
 login.py  users.py  employees.py  administration.py     console screens
 helpers.py  logger.py   input checks and table printing; rotating log file
 migrate_legacy_tables.py one-time migration from the old HRdept / ITdept tables
-tests/                  165 tests
+tests/                  178 tests
 Dockerfile  docker-compose.yml  requirements.txt  requirements.lock.txt  .env.example
 .github/workflows/      CI: runs the tests on every push
 demo_data.py            fills an empty database with 14 sample employees (for demos)
@@ -194,9 +195,7 @@ demo_data.py            fills an empty database with 14 sample employees (for de
 
 - **Services layer.** The console menus, the API and the tests all call the same functions, so a
   rule exists in exactly one place.
-- **One database connection + a lock.** Simple and correct for this size; a connection pool is the
-  next step for real traffic. The last inserted id is kept per thread so concurrent requests cannot
-  mix them up.
+- **Connection pool.** The app keeps a few database connections open (5 by default, set with `MYSQL_POOL_SIZE` in `.env`) and every query borrows one. When all of them are busy, the next query waits for a free one. The last inserted id is kept per thread so concurrent requests cannot mix them up.
 - **Per-request user (`ContextVar`).** The audit log and permission checks need to know the current
   user; a plain global would leak between simultaneous API requests.
 - **Dashboard talks to the API only**, never to the database, so permissions are enforced in one place.
@@ -204,7 +203,7 @@ demo_data.py            fills an empty database with 14 sample employees (for de
 ## Known limitations and next steps
 
 - No HTTPS, refresh tokens or per-IP rate limiting (put it behind a reverse proxy for real use)
-- Lists are not paginated
+- The API pages employees and the audit log; the department and user lists are short and are not paged
 - Schema changes are done by small upgrade functions; a migration tool (Alembic) would be better
 - Dashboard login is lost on browser refresh (the token lives in Streamlit's session)
 

@@ -107,3 +107,14 @@ def test_list_employees_can_be_limited_to_one_department(hire, depts):
     hire("Meera", dept="IT")
     assert [r[1] for r in emp.list_employees(depts["IT"])] == ["Meera"]
     assert len(emp.list_employees()) == 2
+
+def test_employees_page_gives_rows_and_the_total(hire, depts):
+    for i in range(7):
+        hire(f"Person {i}", dept="HR" if i < 4 else "IT")
+    rows, total = emp.employees_page(limit=3, offset=3)
+    assert total == 7
+    assert [r[1] for r in rows] == ["Person 3", "Person 4", "Person 5"]
+    rows, total = emp.employees_page(dept_id=depts["IT"], limit=2)
+    assert (len(rows), total) == (2, 3)
+    assert emp.employees_page(key="Person 5")[1] == 1
+    assert emp.employees_page(limit=5, offset=50) == ([], 7)
