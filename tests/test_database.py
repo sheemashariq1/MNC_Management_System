@@ -67,7 +67,11 @@ def test_connections_closed_by_the_server_are_replaced():
     try:
         cursor = killer.cursor()
         cursor.execute("show processlist")
-        pooled = [row[0] for row in cursor.fetchall() if row[3] == config.MYSQL_DATABASE]
+        pooled = [
+            row[0]
+            for row in cursor.fetchall()
+            if row[3] and row[3].casefold() == config.MYSQL_DATABASE.casefold()
+        ]
         assert pooled
         for connection_id in pooled:
             cursor.execute(f"kill {int(connection_id)}")
