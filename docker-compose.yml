@@ -74,8 +74,24 @@ services:
     depends_on:
       db:
         condition: service_healthy
+      
+  caddy:
+    image: caddy:2
+    profiles: ["https"]
+    restart: unless-stopped
+    environment:
+      DOMAIN: ${DOMAIN:-localhost}
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+    depends_on:
+      - dashboard
 
 volumes:
   db_data:
   reports:
   logs:
+  caddy_data:

@@ -1,0 +1,3 @@
+{$DOMAIN} {
+	reverse_proxy dashboard:8501
+}
