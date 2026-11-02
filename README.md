@@ -2,7 +2,7 @@
 
 [![tests](https://github.com/sheemashariq1/MNC_Management_System/actions/workflows/tests.yml/badge.svg)](https://github.com/sheemashariq1/MNC_Management_System/actions/workflows/tests.yml)
 
-**Live demo:** https://skillway-mnc.duckdns.org (the dashboard, with sample data)
+**Live demo:** https://skillway-mnc.duckdns.org
 
 Signing in needs an account, so I do not publish a demo login here. Message me and I will send one, or run the project yourself with Docker (see Quick start). The demo runs on a small server and may be offline at times.
 
