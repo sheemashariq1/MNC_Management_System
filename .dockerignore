@@ -20,3 +20,4 @@ tempCodeRunnerFile.py
 Dockerfile
 docker-compose.yml
 .dockerignore
+*.sql
