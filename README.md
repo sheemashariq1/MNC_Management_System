@@ -2,13 +2,16 @@
 
 [![tests](https://github.com/sheemashariq1/MNC_Management_System/actions/workflows/tests.yml/badge.svg)](https://github.com/sheemashariq1/MNC_Management_System/actions/workflows/tests.yml)
 
+**Live demo:** https://skillway-mnc.duckdns.org (the dashboard, with sample data)
+
+Signing in needs an account, so I do not publish a demo login here. Message me and I will send one, or run the project yourself with Docker (see Quick start). The demo runs on a small server and may be offline at times.
+
 An employee, department and reporting system for a fictional IT company (**SKILLWAY**, Gurgaon):
 a **FastAPI** REST API, a **Streamlit** dashboard and the original **console app**, all sharing one
 set of business rules on top of a normalised **MySQL** database.
 
 It started as a Class 12 school project (a single console script with MySQL) and was rebuilt step by
-step: fixed bugs and SQL injection, normalised the schema, added real authentication and roles, an
-audit trail, reports, an API, a web dashboard, tests, CI and Docker.
+step: fixed bugs and SQL injection, normalised the schema, added real authentication and roles, an audit trail, reports, an API, a web dashboard, tests, CI and Docker.
 
 ## Features
 
@@ -171,6 +174,17 @@ Create the first account on the dashboard's **Create account** tab using your `A
 If you still have data from the very first version (tables `HRdept` and `ITdept`), run
 `python migrate_legacy_tables.py` once.
 
+## Deploying on a server
+
+The same Docker setup runs on a small cloud server (I used an AWS EC2 instance with 2 GB of memory). Caddy sits in front of the dashboard and gets an HTTPS certificate for your domain.
+
+1. Open ports 80 and 443 on the server, and point a domain at its IP address.
+2. Put `DOMAIN=your.domain` in `.env`, next to the other settings, and use strong values for the password, the secret and the access codes.
+3. Start it:
+docker compose --profile https up -d --build
+
+Only the dashboard is exposed. The API and the database stay inside Docker's own network.
+
 ## Project structure
 
 ```
@@ -188,6 +202,7 @@ migrate_legacy_tables.py one-time migration from the old HRdept / ITdept tables
 tests/                  178 tests
 Dockerfile  docker-compose.yml  requirements.txt  requirements.lock.txt  .env.example
 .github/workflows/      CI: runs the tests on every push
+Caddyfile               HTTPS reverse proxy for the server deployment
 demo_data.py            fills an empty database with 14 sample employees (for demos)
 ```
 
@@ -202,7 +217,7 @@ demo_data.py            fills an empty database with 14 sample employees (for de
 
 ## Known limitations and next steps
 
-- No HTTPS, refresh tokens or per-IP rate limiting (put it behind a reverse proxy for real use)
+- No refresh tokens and no per-IP rate limiting. The server deployment gets HTTPS from the Caddy proxy; running locally uses plain HTTP
 - The API pages employees and the audit log; the department and user lists are short and are not paged
 - Schema changes are done by small upgrade functions; a migration tool (Alembic) would be better
 - Dashboard login is lost on browser refresh (the token lives in Streamlit's session)
