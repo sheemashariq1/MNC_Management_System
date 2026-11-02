@@ -9,3 +9,5 @@ tempCodeRunnerFile.py
 .vscode/
 .streamlit/secrets.toml
 .DS_Store
+*.sql
+*.pem
