@@ -2,7 +2,7 @@
 
 [![tests](https://github.com/sheemashariq1/MNC_Management_System/actions/workflows/tests.yml/badge.svg)](https://github.com/sheemashariq1/MNC_Management_System/actions/workflows/tests.yml)
 
-**Live demo:** https://skillway-mnc.duckdns.org
+**Live demo:** https://skillway-mnc.duckdns.org (the dashboard only; the API is not public)
 
 Signing in needs an account, so I do not publish a demo login here. Message me and I will send one, or run the project yourself with Docker (see Quick start). The demo runs on a small server and may be offline at times.
 
@@ -131,7 +131,7 @@ python -m pytest
 - services: validation, SQL-injection attempts, all-or-nothing updates, last-admin rules, lockout
 - API: every endpoint, tokens (forged, expired, unsigned, deleted user), role scoping, error codes
 - dashboard: the real Streamlit script is driven headlessly with `AppTest` (login, forms, role menus)
-- concurrency: 20 threads writing at once through one shared connection
+- database pool: 20 threads writing at once, more threads than connections, and connections closed by the server
 
 ## Quick start
 
@@ -178,12 +178,15 @@ If you still have data from the very first version (tables `HRdept` and `ITdept`
 
 The same Docker setup runs on a small cloud server (I used an AWS EC2 instance with 2 GB of memory). Caddy sits in front of the dashboard and gets an HTTPS certificate for your domain.
 
-1. Open ports 80 and 443 on the server, and point a domain at its IP address.
+1. Point a domain at the server's IP address and open only ports 80 and 443 to the internet (plus SSH from your own IP).
 2. Put `DOMAIN=your.domain` in `.env`, next to the other settings, and use strong values for the password, the secret and the access codes.
 3. Start it:
-docker compose --profile https up -d --build
 
-Only the dashboard is exposed. The API and the database stay inside Docker's own network.
+```
+docker compose --profile https up -d --build
+```
+
+Caddy forwards the traffic from ports 80 and 443 to the dashboard. The API and the database are not reachable from the internet.
 
 ## Project structure
 
