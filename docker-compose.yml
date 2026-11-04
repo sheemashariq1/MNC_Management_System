@@ -55,8 +55,6 @@ services:
     command: [ "python", "-m", "streamlit", "run", "dashboard/app.py", "--server.address", "0.0.0.0", "--server.port", "8501", "--server.headless", "true" ]
     environment:
       MNC_API_URL: http://api:8000 # the dashboard talks to the API, never to the database
-      STREAMLIT_SERVER_ENABLE_CORS: false
-      STREAMLIT_SERVER_ENABLE_XSRF_PROTECTION: false
     ports:
       - "127.0.0.1:8501:8501"
     depends_on:

@@ -12,6 +12,3 @@ toolbarMode = "minimal"      # hides the developer "Deploy" button and menu
 
 [browser]
 gatherUsageStats = false
-[server]
-enableCORS = false
-enableXsrfProtection = false
