@@ -1,5 +1,4 @@
-"""Employees, departments and reports (Step 2 schema).
-
+"""Employees, departments and reports.
 employees.dept_id is a FOREIGN KEY -> departments.dept_id. So:
   * an employee can only belong to a department that really exists
   * a department that still has employees cannot be deleted by mistake
